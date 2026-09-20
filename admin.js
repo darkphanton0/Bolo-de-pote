@@ -111,12 +111,18 @@ formProduto.addEventListener('submit', async (evento) => {
         promocao: document.querySelector('#produto-promocao').checked
     };
 
-    if (id) {
-        const produtoSalvo = await salvarProdutoRemoto(produto);
-        produtos = produtos.map((item) => item.id === Number(id) ? produtoSalvo : item);
-    } else {
-        const produtoSalvo = await salvarProdutoRemoto(produto);
-        produtos.push(produtoSalvo);
+    try {
+        if (id) {
+            const produtoSalvo = await salvarProdutoRemoto(produto);
+            produtos = produtos.map((item) => item.id === Number(id) ? produtoSalvo : item);
+        } else {
+            const produtoSalvo = await salvarProdutoRemoto(produto);
+            produtos.push(produtoSalvo);
+        }
+    } catch (erro) {
+        console.error('Não foi possível salvar o produto no Supabase.', erro);
+        window.alert('Não foi possível salvar no banco remoto. Execute supabase.sql e confira as políticas da tabela produtos.');
+        return;
     }
 
     salvarProdutos(produtos);
@@ -140,7 +146,13 @@ listaAdmin.addEventListener('click', (evento) => {
     const produto = produtos.find((item) => item.id === id);
 
     if (botao.dataset.acao === 'excluir') {
-        await excluirProdutoRemoto(id);
+        try {
+            await excluirProdutoRemoto(id);
+        } catch (erro) {
+            console.error('Não foi possível excluir o produto no Supabase.', erro);
+            window.alert('Não foi possível excluir no banco remoto. Confira as políticas da tabela produtos.');
+            return;
+        }
         produtos = produtos.filter((item) => item.id !== id);
         salvarProdutos(produtos);
         renderizarLista();

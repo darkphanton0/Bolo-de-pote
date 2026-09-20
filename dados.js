@@ -106,6 +106,7 @@ const salvarProdutos = (produtos) => {
 
 const carregarProdutos = async () => {
     if (!supabaseClient) {
+        window.catalogoRemotoAtivo = false;
         return obterProdutos();
     }
 
@@ -116,9 +117,12 @@ const carregarProdutos = async () => {
         .order('nome');
 
     if (error || !data || data.length === 0) {
+        window.catalogoRemotoAtivo = false;
+        console.warn('Supabase indisponível. Execute supabase.sql e confira as políticas da tabela produtos.', error);
         return obterProdutos();
     }
 
+    window.catalogoRemotoAtivo = true;
     const produtos = data.map(produtoDoBanco);
     salvarProdutos(produtos);
     return produtos;

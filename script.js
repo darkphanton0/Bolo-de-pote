@@ -21,6 +21,7 @@ const formularioPesquisa = document.querySelector('.pesquisa');
 const campoPesquisa = document.querySelector('#pesquisa');
 const filtroCategoria = document.querySelector('#filtro-categoria');
 const checkoutCarrinho = document.querySelector('#checkout-carrinho');
+const estadoCatalogo = document.querySelector('#estado-catalogo');
 let produtos = [];
 const numeroWhatsApp = '5527997515335';
 
@@ -210,6 +211,10 @@ checkoutCarrinho.addEventListener('submit', (evento) => {
 
 const iniciarLoja = async () => {
     produtos = await carregarProdutos();
+    if (estadoCatalogo && window.catalogoRemotoAtivo === false) {
+        estadoCatalogo.hidden = false;
+        estadoCatalogo.textContent = 'Modo local: execute supabase.sql para sincronizar todos os dispositivos.';
+    }
     atualizarCarrinho();
     prepararCategorias();
     renderizarProdutos();

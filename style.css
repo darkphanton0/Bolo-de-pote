@@ -551,6 +551,19 @@ body {
     font-size: 0.9rem;
 }
 
+.estado-catalogo {
+    display: grid;
+    justify-items: end;
+    gap: 2px;
+}
+
+.estado-catalogo small {
+    max-width: 230px;
+    color: #8f3f35;
+    font-size: 0.7rem;
+    text-align: right;
+}
+
 .cardapio {
     display: grid;
     grid-template-columns: repeat(auto-fill, 260px);
@@ -1141,6 +1154,14 @@ body {
         align-items: start;
         flex-direction: column;
         gap: 8px;
+    }
+
+    .estado-catalogo {
+        justify-items: start;
+    }
+
+    .estado-catalogo small {
+        text-align: left;
     }
 
     .admin-header {

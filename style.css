@@ -1230,6 +1230,182 @@ body {
     }
 }
 
+@media (max-width: 600px) {
+    html,
+    body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .cab {
+        min-width: 0;
+        grid-template-columns: minmax(0, 1fr) auto;
+        padding: 10px 12px;
+    }
+
+    .marca {
+        min-width: 0;
+        max-width: calc(100vw - 82px);
+        gap: 6px;
+    }
+
+    .marca-simbolo {
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+    }
+
+    .marca-texto strong {
+        font-size: 1.2rem;
+    }
+
+    .marca-texto small {
+        font-size: 0.48rem;
+        letter-spacing: 0.05em;
+    }
+
+    .pesquisa input {
+        min-height: 38px;
+        font-size: 0.9rem;
+    }
+
+    .grade {
+        min-width: 0;
+        padding: 20px 12px;
+    }
+
+    .cabecalho-cardapio h2 {
+        font-size: 2rem;
+    }
+
+    .filtros-cardapio {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .filtros-cardapio select {
+        width: 100%;
+    }
+
+    .cardapio {
+        width: 100%;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .item-card {
+        width: 100%;
+    }
+
+    .imagem-item {
+        aspect-ratio: 16 / 10;
+    }
+
+    .detalhes-item {
+        padding: 14px;
+    }
+
+    .painel-carrinho {
+        right: 8px;
+        width: min(360px, calc(100vw - 72px));
+        padding: 16px;
+    }
+
+    .checkout-pedido {
+        grid-column: 2;
+        width: calc(100% - 24px);
+        margin: 20px 12px 28px;
+        padding: 18px;
+    }
+
+    .checkout-cabecalho h2 {
+        font-size: 1.8rem;
+    }
+
+    .pagina-main,
+    .admin-main {
+        min-width: 0;
+        width: calc(100% - 24px);
+        padding: 28px 0;
+    }
+
+    .pagina-header {
+        min-width: 0;
+        padding: 10px 12px;
+    }
+
+    .pagina-header .marca {
+        max-width: 65vw;
+    }
+
+    .voltar-loja {
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+    .acao-pagina,
+    .contato-item {
+        grid-template-columns: 40px minmax(0, 1fr) auto;
+        padding: 14px;
+        gap: 10px;
+    }
+
+    .acao-pagina:not(.contato-item) {
+        grid-template-columns: 40px minmax(0, 1fr);
+    }
+
+    .acao-icone {
+        width: 40px;
+        height: 40px;
+    }
+
+    .linha-produto {
+        min-width: 0;
+    }
+
+    .info-produto p {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .acoes-formulario {
+        flex-direction: column;
+    }
+
+    .acoes-formulario button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    body,
+    .admin-body,
+    .pagina-body {
+        grid-template-columns: 48px 1fr;
+    }
+
+    .botoes a {
+        width: 34px;
+        height: 34px;
+    }
+
+    .botoes img {
+        width: 25px;
+        height: 25px;
+    }
+
+    .grade {
+        padding-inline: 10px;
+    }
+
+    .checkout-pedido {
+        grid-column: 2;
+        width: calc(100% - 20px);
+        margin-inline: 10px;
+    }
+}
+
 .selo-promocao {
     position: absolute;
     z-index: 1;
@@ -1403,5 +1579,69 @@ body {
     .checkout-pedido {
         width: calc(100% - 28px);
         margin: 20px 14px 28px;
+    }
+}
+
+@media (max-width: 600px) {
+    .cardapio {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .item-card {
+        min-width: 0;
+    }
+
+    .imagem-item {
+        aspect-ratio: 1 / 1;
+    }
+
+    .detalhes-item {
+        min-width: 0;
+        padding: 10px;
+    }
+
+    .detalhes-item h3 {
+        margin-bottom: 5px;
+        font-size: 0.95rem;
+        line-height: 1.15;
+    }
+
+    .detalhes-item p {
+        margin-bottom: 12px;
+        font-size: 0.76rem;
+        line-height: 1.35;
+    }
+
+    .categoria-item {
+        margin-top: 4px;
+        font-size: 0.65rem;
+    }
+
+    .rodape-item {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .preco-item {
+        font-size: 0.88rem;
+    }
+
+    .preco-item del {
+        font-size: 0.65rem;
+    }
+
+    .rodape-item button {
+        width: 100%;
+        padding: 8px 5px;
+        font-size: 0.72rem;
+    }
+
+    .selo-promocao {
+        top: 10px;
+        left: -4px;
+        padding: 5px 7px;
+        font-size: 0.58rem;
     }
 }

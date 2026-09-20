@@ -63,6 +63,8 @@
         </section>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
     <script src="dados.js"></script>
     <script>
         const mensagemCompartilhamento = 'Confira o cardápio da Yellow Doces Artesanais!';
@@ -71,13 +73,15 @@
         const statusCopia = document.querySelector('#status-copia');
         const statusCompartilhamento = document.querySelector('#status-compartilhamento');
         const linkWhatsApp = document.querySelector('#compartilhar-whatsapp');
-        const produtosCompartilhar = obterProdutos();
         const urlCardapio = window.location.href.replace('compartilhar.html', 'index.html');
         const mensagemCompleta = `${mensagemCompartilhamento} ${urlCardapio}`;
 
-        document.querySelector('#previa-contagem').textContent = `${produtosCompartilhar.length} ${produtosCompartilhar.length === 1 ? 'sabor' : 'sabores'}`;
-        document.querySelector('#sabores-previa').innerHTML = produtosCompartilhar.slice(0, 6).map((produto) => `<span>${produto.nome}</span>`).join('');
         linkWhatsApp.href = `https://wa.me/?text=${encodeURIComponent(mensagemCompleta)}`;
+
+        carregarProdutos().then((produtosCompartilhar) => {
+            document.querySelector('#previa-contagem').textContent = `${produtosCompartilhar.length} ${produtosCompartilhar.length === 1 ? 'sabor' : 'sabores'}`;
+            document.querySelector('#sabores-previa').innerHTML = produtosCompartilhar.slice(0, 6).map((produto) => `<span>${produto.nome}</span>`).join('');
+        });
 
         botaoCompartilhar.addEventListener('click', async () => {
             if (navigator.share) {

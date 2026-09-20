@@ -21,7 +21,7 @@ const formularioPesquisa = document.querySelector('.pesquisa');
 const campoPesquisa = document.querySelector('#pesquisa');
 const filtroCategoria = document.querySelector('#filtro-categoria');
 const checkoutCarrinho = document.querySelector('#checkout-carrinho');
-const produtos = obterProdutos();
+let produtos = [];
 const numeroWhatsApp = '5527997515335';
 
 const quantidadeTotal = () => carrinho.reduce((total, item) => total + item.quantidade, 0);
@@ -208,6 +208,11 @@ checkoutCarrinho.addEventListener('submit', (evento) => {
     window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`, '_blank');
 });
 
-atualizarCarrinho();
-prepararCategorias();
-renderizarProdutos();
+const iniciarLoja = async () => {
+    produtos = await carregarProdutos();
+    atualizarCarrinho();
+    prepararCategorias();
+    renderizarProdutos();
+};
+
+iniciarLoja();

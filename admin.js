@@ -12,7 +12,7 @@ const botaoCancelar = document.querySelector('#cancelar-edicao');
 const campoPreco = document.querySelector('#produto-preco');
 const campoPrecoOriginal = document.querySelector('#produto-preco-original');
 const campoPromocao = document.querySelector('#produto-promocao');
-let produtos = obterProdutos();
+let produtos = [];
 let autenticado = false;
 
 const mostrarPainel = (autenticado) => {
@@ -20,7 +20,7 @@ const mostrarPainel = (autenticado) => {
     painelAdmin.hidden = !autenticado;
 
     if (autenticado) {
-        renderizarLista();
+        carregarCatalogoAdmin();
     }
 };
 
@@ -52,6 +52,11 @@ const renderizarLista = () => {
             </div>
         </article>
     `).join('');
+};
+
+const carregarCatalogoAdmin = async () => {
+    produtos = await carregarProdutos();
+    renderizarLista();
 };
 
 formLogin.addEventListener('submit', (evento) => {
@@ -107,9 +112,11 @@ formProduto.addEventListener('submit', async (evento) => {
     };
 
     if (id) {
-        produtos = produtos.map((item) => item.id === Number(id) ? produto : item);
+        const produtoSalvo = await salvarProdutoRemoto(produto);
+        produtos = produtos.map((item) => item.id === Number(id) ? produtoSalvo : item);
     } else {
-        produtos.push(produto);
+        const produtoSalvo = await salvarProdutoRemoto(produto);
+        produtos.push(produtoSalvo);
     }
 
     salvarProdutos(produtos);
@@ -133,6 +140,7 @@ listaAdmin.addEventListener('click', (evento) => {
     const produto = produtos.find((item) => item.id === id);
 
     if (botao.dataset.acao === 'excluir') {
+        await excluirProdutoRemoto(id);
         produtos = produtos.filter((item) => item.id !== id);
         salvarProdutos(produtos);
         renderizarLista();

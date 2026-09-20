@@ -57,6 +57,28 @@ const produtosPadrao = [
 
 const chaveProdutos = 'yellow-produtos';
 
+const produtoParaBanco = (produto) => ({
+    id: produto.id,
+    nome: produto.nome,
+    descricao: produto.descricao,
+    preco: produto.preco,
+    preco_original: produto.precoOriginal || null,
+    imagem: produto.imagem,
+    categoria: produto.categoria,
+    promocao: produto.promocao
+});
+
+const produtoDoBanco = (produto) => ({
+    id: produto.id,
+    nome: produto.nome,
+    descricao: produto.descricao,
+    preco: Number(produto.preco),
+    precoOriginal: produto.preco_original ? Number(produto.preco_original) : null,
+    imagem: produto.imagem,
+    categoria: produto.categoria || 'Classicos',
+    promocao: Boolean(produto.promocao)
+});
+
 const obterProdutos = () => {
     const produtosSalvos = localStorage.getItem(chaveProdutos);
 
@@ -80,6 +102,58 @@ const obterProdutos = () => {
 
 const salvarProdutos = (produtos) => {
     localStorage.setItem(chaveProdutos, JSON.stringify(produtos));
+};
+
+const carregarProdutos = async () => {
+    if (!supabaseClient) {
+        return obterProdutos();
+    }
+
+    const { data, error } = await supabaseClient
+        .from('produtos')
+        .select('*')
+        .order('categoria')
+        .order('nome');
+
+    if (error || !data || data.length === 0) {
+        return obterProdutos();
+    }
+
+    const produtos = data.map(produtoDoBanco);
+    salvarProdutos(produtos);
+    return produtos;
+};
+
+const salvarProdutoRemoto = async (produto) => {
+    if (!supabaseClient) {
+        salvarProdutos([...obterProdutos().filter((item) => item.id !== produto.id), produto]);
+        return produto;
+    }
+
+    const { data, error } = await supabaseClient
+        .from('produtos')
+        .upsert(produtoParaBanco(produto), { onConflict: 'id' })
+        .select()
+        .single();
+
+    if (error) {
+        throw error;
+    }
+
+    return produtoDoBanco(data);
+};
+
+const excluirProdutoRemoto = async (id) => {
+    if (!supabaseClient) {
+        salvarProdutos(obterProdutos().filter((produto) => produto.id !== id));
+        return;
+    }
+
+    const { error } = await supabaseClient.from('produtos').delete().eq('id', id);
+
+    if (error) {
+        throw error;
+    }
 };
 
 const formatarPreco = (valor) => valor.toLocaleString('pt-BR', {

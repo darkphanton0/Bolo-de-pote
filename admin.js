@@ -4,6 +4,7 @@ const loginAdmin = document.querySelector('#login-admin');
 const painelAdmin = document.querySelector('#painel-admin');
 const formLogin = document.querySelector('#form-login');
 const erroLogin = document.querySelector('#erro-login');
+const botaoEntrar = document.querySelector('#entrar-admin');
 const formProduto = document.querySelector('#form-produto');
 const listaAdmin = document.querySelector('#itens-admin');
 const totalProdutos = document.querySelector('#total-produtos');
@@ -12,6 +13,7 @@ const botaoCancelar = document.querySelector('#cancelar-edicao');
 const campoPreco = document.querySelector('#produto-preco');
 const campoPrecoOriginal = document.querySelector('#produto-preco-original');
 const campoPromocao = document.querySelector('#produto-promocao');
+const statusAdmin = document.querySelector('#status-admin');
 let produtos = [];
 let autenticado = false;
 
@@ -55,12 +57,24 @@ const renderizarLista = () => {
 };
 
 const carregarCatalogoAdmin = async () => {
-    produtos = await carregarProdutos();
-    renderizarLista();
+    try {
+        produtos = await carregarProdutos();
+        renderizarLista();
+
+        if (window.catalogoRemotoAtivo === false) {
+            statusAdmin.hidden = false;
+            statusAdmin.textContent = 'Banco remoto indisponível. Os dados exibidos são locais neste navegador.';
+        }
+    } catch (erro) {
+        console.error('Não foi possível carregar o catálogo remoto.', erro);
+        produtos = obterProdutos();
+        renderizarLista();
+        statusAdmin.hidden = false;
+        statusAdmin.textContent = 'Não foi possível conectar ao Supabase. Execute supabase.sql e confira a URL da página.';
+    }
 };
 
-formLogin.addEventListener('submit', (evento) => {
-    evento.preventDefault();
+const entrarNoPainel = () => {
     const usuario = document.querySelector('#usuario').value.trim();
     const senha = document.querySelector('#senha').value;
 
@@ -72,6 +86,13 @@ formLogin.addEventListener('submit', (evento) => {
     }
 
     erroLogin.hidden = false;
+};
+
+botaoEntrar.addEventListener('click', entrarNoPainel);
+
+formLogin.addEventListener('submit', (evento) => {
+    evento.preventDefault();
+    entrarNoPainel();
 });
 
 formProduto.addEventListener('submit', async (evento) => {

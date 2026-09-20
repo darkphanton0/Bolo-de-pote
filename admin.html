@@ -8,6 +8,7 @@
     <title>Yellow | Administrador</title>
 </head>
 <body class="admin-body">
+    <button type="button" class="botao-abrir-menu" id="botao-menu-mobile" aria-label="Abrir menu" aria-expanded="false" aria-controls="navegacao-principal">&#8942;</button>
     <div class="docinhos-fundo" aria-hidden="true">
         <span>🍰</span><span>🧁</span><span>🍪</span><span>🍩</span><span>🍮</span><span>🍰</span>
     </div>
@@ -23,7 +24,8 @@
         <a href="index.html" class="voltar-loja">Ver cardápio</a>
     </header>
 
-    <nav class="nav" aria-label="Navegação principal">
+    <nav class="nav" id="navegacao-principal" aria-label="Navegação principal">
+        <button type="button" class="botao-menu-mobile" id="fechar-menu-mobile" aria-label="Fechar menu">&times;</button>
         <div class="botoes">
             <a href="index.html" aria-label="Início"><img src="img/home.png" alt=""></a>
             <a href="compartilhar.html" aria-label="Compartilhar"><img src="img/compartilhar.png" alt=""></a>
@@ -111,5 +113,6 @@
     <script src="supabase-config.js"></script>
     <script src="dados.js"></script>
     <script src="admin.js"></script>
+    <script src="nav.js"></script>
 </body>
 </html>

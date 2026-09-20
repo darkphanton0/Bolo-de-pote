@@ -56,8 +56,8 @@ const renderizarProdutos = (termo = '', categoria = 'todas') => {
         return;
     }
 
-    gradeCardapio.innerHTML = produtosFiltrados.map((produto) => `
-        <article class="item-card">
+    gradeCardapio.innerHTML = produtosFiltrados.map((produto, indice) => `
+        <article class="item-card" style="animation-delay: ${Math.min(indice * 70, 700)}ms">
             ${produto.promocao && produto.precoOriginal > produto.preco ? '<span class="selo-promocao"><span aria-hidden="true">✦</span> Promoção</span>' : ''}
             <img src="${produto.imagem}" alt="Imagem de ${produto.nome}" class="imagem-item">
             <div class="detalhes-item">

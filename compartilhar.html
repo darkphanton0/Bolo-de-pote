@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Yellow | Compartilhar</title>
+</head>
+<body class="pagina-body">
+    <div class="docinhos-fundo" aria-hidden="true">
+        <span>🍰</span><span>🧁</span><span>🍪</span><span>🍩</span><span>🍮</span><span>🍰</span>
+    </div>
+    <header class="pagina-header">
+        <a href="index.html" class="marca" aria-label="Voltar para a página inicial">
+            <span class="marca-simbolo"><img src="img/lirio2.webp" alt=""></span>
+            <span class="marca-texto"><strong>Yellow</strong><small>doces artesanais</small></span>
+        </a>
+        <a href="index.html" class="voltar-loja">Ver cardápio</a>
+    </header>
+
+    <nav class="nav" aria-label="Navegação principal">
+        <div class="botoes">
+            <a href="index.html" aria-label="Início"><img src="img/home.png" alt=""></a>
+            <a href="compartilhar.html" aria-label="Compartilhar" class="nav-ativo"><img src="img/compartilhar.png" alt=""></a>
+            <a href="contato.html" aria-label="Contato"><img src="img/contato.png" alt=""></a>
+        </div>
+    </nav>
+
+    <main class="pagina-main">
+        <section class="pagina-intro">
+            <p class="etiqueta">Compartilhe a Yellow</p>
+            <h1>Leve um doce para alguém especial</h1>
+            <p>Envie nosso cardápio para quem também ama um bolo de pote bem feito.</p>
+        </section>
+
+        <section class="acoes-pagina" aria-label="Opções de compartilhamento">
+            <button type="button" class="acao-pagina acao-destaque" id="compartilhar-nativo">
+                <span class="acao-icone" aria-hidden="true">↗</span>
+                <strong>Compartilhar cardápio</strong>
+                <small id="status-compartilhamento">Usar as opções do seu dispositivo</small>
+            </button>
+            <a class="acao-pagina" id="compartilhar-whatsapp" href="https://wa.me/" target="_blank" rel="noopener">
+                <span class="acao-icone" aria-hidden="true">◌</span>
+                <strong>Enviar pelo WhatsApp</strong>
+                <small>Compartilhar diretamente com alguém</small>
+            </a>
+            <button type="button" class="acao-pagina" id="copiar-link">
+                <span class="acao-icone" aria-hidden="true">⧉</span>
+                <strong>Copiar link</strong>
+                <small id="status-copia">Copiar o endereço do cardápio</small>
+            </button>
+        </section>
+
+        <section class="previa-cardapio" aria-label="Prévia do cardápio">
+            <div class="previa-cabecalho">
+                <div>
+                    <p class="etiqueta">Yellow</p>
+                    <h2>Um cardápio feito para compartilhar</h2>
+                </div>
+                <span class="previa-contagem" id="previa-contagem">6 sabores</span>
+            </div>
+            <div class="sabores-previa" id="sabores-previa"></div>
+        </section>
+    </main>
+
+    <script src="dados.js"></script>
+    <script>
+        const mensagemCompartilhamento = 'Confira o cardápio da Yellow Doces Artesanais!';
+        const botaoCompartilhar = document.querySelector('#compartilhar-nativo');
+        const botaoCopiar = document.querySelector('#copiar-link');
+        const statusCopia = document.querySelector('#status-copia');
+        const statusCompartilhamento = document.querySelector('#status-compartilhamento');
+        const linkWhatsApp = document.querySelector('#compartilhar-whatsapp');
+        const produtosCompartilhar = obterProdutos();
+        const urlCardapio = window.location.href.replace('compartilhar.html', 'index.html');
+        const mensagemCompleta = `${mensagemCompartilhamento} ${urlCardapio}`;
+
+        document.querySelector('#previa-contagem').textContent = `${produtosCompartilhar.length} ${produtosCompartilhar.length === 1 ? 'sabor' : 'sabores'}`;
+        document.querySelector('#sabores-previa').innerHTML = produtosCompartilhar.slice(0, 6).map((produto) => `<span>${produto.nome}</span>`).join('');
+        linkWhatsApp.href = `https://wa.me/?text=${encodeURIComponent(mensagemCompleta)}`;
+
+        botaoCompartilhar.addEventListener('click', async () => {
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: 'Yellow Doces Artesanais', text: mensagemCompartilhamento, url: urlCardapio });
+                    statusCompartilhamento.textContent = 'Cardápio compartilhado!';
+                } catch {
+                    statusCompartilhamento.textContent = 'Compartilhamento cancelado.';
+                }
+                return;
+            }
+
+            statusCompartilhamento.textContent = 'Seu dispositivo não oferece compartilhamento direto.';
+        });
+
+        botaoCopiar.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(urlCardapio);
+                statusCopia.textContent = 'Link do cardápio copiado!';
+            } catch {
+                window.prompt('Copie o link do cardápio:', urlCardapio);
+            }
+        });
+    </script>
+</body>
+</html>

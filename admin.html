@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="style.css">
+    <title>Yellow | Administrador</title>
+</head>
+<body class="admin-body">
+    <div class="docinhos-fundo" aria-hidden="true">
+        <span>🍰</span><span>🧁</span><span>🍪</span><span>🍩</span><span>🍮</span><span>🍰</span>
+    </div>
+    <header class="admin-header">
+        <a href="index.html" class="marca" aria-label="Voltar para a página inicial">
+            <span class="marca-simbolo"><img src="img/lirio2.webp" alt=""></span>
+            <span class="marca-texto"><strong>Yellow</strong><small>doces artesanais</small></span>
+        </a>
+        <div>
+            <p class="etiqueta">Área restrita</p>
+            <h1>Administrador</h1>
+        </div>
+        <a href="index.html" class="voltar-loja">Ver cardápio</a>
+    </header>
+
+    <nav class="nav" aria-label="Navegação principal">
+        <div class="botoes">
+            <a href="index.html" aria-label="Início"><img src="img/home.png" alt=""></a>
+            <a href="compartilhar.html" aria-label="Compartilhar"><img src="img/compartilhar.png" alt=""></a>
+            <a href="contato.html" aria-label="Contato"><img src="img/contato.png" alt=""></a>
+            <a href="admin.html" aria-label="Área do administrador" class="link-admin nav-ativo"><span aria-hidden="true">⚙</span></a>
+        </div>
+    </nav>
+
+    <main class="admin-main">
+        <section class="login-admin" id="login-admin">
+            <p class="etiqueta">Acesso</p>
+            <h2>Entrar no painel</h2>
+            <p class="texto-suave">Gerencie os itens que aparecem no cardápio.</p>
+            <form id="form-login" class="formulario-admin">
+                <label for="usuario">Usuário</label>
+                <input type="text" id="usuario" autocomplete="username" required>
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" autocomplete="current-password" required>
+                <p class="erro-form" id="erro-login" role="alert" hidden>Usuário ou senha incorretos.</p>
+                <button type="submit" class="botao-principal">Entrar</button>
+            </form>
+            <p class="credenciais-demo">Demonstração: <strong>admin</strong> / <strong>yellow123</strong></p>
+        </section>
+
+        <section class="painel-admin" id="painel-admin" hidden>
+            <div class="topo-painel">
+                <div>
+                    <p class="etiqueta">Catálogo</p>
+                    <h2>Gerenciar itens</h2>
+                </div>
+                <button type="button" class="botao-secundario" id="sair-admin">Sair</button>
+            </div>
+
+            <form id="form-produto" class="form-produto">
+                <input type="hidden" id="produto-id">
+                <div class="campo-formulario">
+                    <label for="produto-nome">Nome do item</label>
+                    <input type="text" id="produto-nome" required>
+                </div>
+                <div class="campo-formulario">
+                    <label for="produto-preco">Preço (R$)</label>
+                    <input type="number" id="produto-preco" min="0" step="0.01" required>
+                </div>
+                <div class="campo-formulario">
+                    <label for="produto-preco-original">Preço anterior (para promoção)</label>
+                    <input type="number" id="produto-preco-original" min="0" step="0.01" placeholder="Para promoções">
+                </div>
+                <div class="campo-formulario">
+                    <label for="produto-categoria">Categoria</label>
+                    <input type="text" id="produto-categoria" placeholder="Ex.: Especiais" required>
+                </div>
+                <label class="campo-checkbox campo-largo">
+                    <input type="checkbox" id="produto-promocao">
+                    <span>Marcar como promoção</span>
+                </label>
+                <div class="campo-formulario campo-largo">
+                    <label for="produto-descricao">Descrição</label>
+                    <textarea id="produto-descricao" rows="3" required></textarea>
+                </div>
+                <div class="campo-formulario campo-largo">
+                    <label for="produto-imagem">Caminho da imagem</label>
+                    <input type="text" id="produto-imagem" value="img/lirio2.webp" required>
+                </div>
+                <div class="campo-formulario campo-largo">
+                    <label for="produto-arquivo">Ou escolha uma foto do computador</label>
+                    <input type="file" id="produto-arquivo" accept="image/*">
+                </div>
+                <div class="acoes-formulario campo-largo">
+                    <button type="submit" class="botao-principal" id="salvar-produto">Criar item</button>
+                    <button type="button" class="botao-secundario" id="cancelar-edicao" hidden>Cancelar edição</button>
+                </div>
+            </form>
+
+            <div class="lista-admin">
+                <div class="titulo-lista">
+                    <h3>Itens cadastrados</h3>
+                    <span id="total-produtos">0 itens</span>
+                </div>
+                <div id="itens-admin"></div>
+            </div>
+        </section>
+    </main>
+    <script src="dados.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

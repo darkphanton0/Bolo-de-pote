@@ -130,7 +130,7 @@ formProduto.addEventListener('submit', async (evento) => {
     renderizarLista();
 });
 
-listaAdmin.addEventListener('click', (evento) => {
+listaAdmin.addEventListener('click', async (evento) => {
     if (!autenticado) {
         mostrarPainel(false);
         return;

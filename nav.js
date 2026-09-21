@@ -25,3 +25,35 @@ if (botaoMenu && navegacao) {
         }
     });
 }
+
+const barraSuperior = document.querySelector('.cab, .admin-header, .pagina-header');
+
+if (barraSuperior) {
+    let quadroMedicao = null;
+
+    const medirBarraSuperior = () => {
+        quadroMedicao = null;
+        const altura = Math.round(barraSuperior.getBoundingClientRect().height);
+
+        if (altura > 0) {
+            document.documentElement.style.setProperty('--altura-barra', `${altura}px`);
+        }
+    };
+
+    const agendarMedicaoBarra = () => {
+        if (quadroMedicao !== null) {
+            return;
+        }
+
+        quadroMedicao = window.requestAnimationFrame(medirBarraSuperior);
+    };
+
+    medirBarraSuperior();
+    window.addEventListener('resize', agendarMedicaoBarra, { passive: true });
+    window.addEventListener('orientationchange', agendarMedicaoBarra, { passive: true });
+    window.addEventListener('load', agendarMedicaoBarra);
+
+    if (document.fonts?.ready) {
+        document.fonts.ready.then(agendarMedicaoBarra).catch(() => {});
+    }
+}

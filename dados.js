@@ -75,7 +75,7 @@ const produtoDoBanco = (produto) => ({
     preco: Number(produto.preco),
     precoOriginal: produto.preco_original ? Number(produto.preco_original) : null,
     imagem: produto.imagem,
-    categoria: produto.categoria || 'Classicos',
+    categoria: produto.categoria || 'Clássicos',
     promocao: Boolean(produto.promocao)
 });
 
@@ -160,7 +160,10 @@ const excluirProdutoRemoto = async (id) => {
     }
 };
 
-const formatarPreco = (valor) => valor.toLocaleString('pt-BR', {
+const formatarPreco = (valor) => Number(valor || 0).toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL'
 });
+
+const escaparHtml = (valor) => String(valor ?? '').replace(/[&<>"']/g, (caractere) =>
+    '\u0026#' + caractere.charCodeAt(0) + ';');

@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Yellow Doces Artesanais: bolos de pote feitos na hora. Escolha seu sabor e faça seu pedido pelo WhatsApp.">
+    <meta name="theme-color" content="#f7df00">
+    <meta property="og:title" content="Yellow | Doces Artesanais">
+    <meta property="og:description" content="Bolos de pote artesanais. Escolha seu sabor e peça pelo WhatsApp.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="img/lirio2.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lobster+Two:wght@400;700&display=swap">
     <link rel="stylesheet" href="style.css">
-    <title>Yellow</title>
+    <title>Yellow | Doces Artesanais</title>
 </head>
 <body>
     <button type="button" class="botao-abrir-menu" id="botao-menu-mobile" aria-label="Abrir menu" aria-expanded="false" aria-controls="navegacao-principal">&#8942;</button>
@@ -42,8 +51,10 @@
                 <strong>R$ 0,00</strong>
             </div>
             <button type="button" class="finalizar-carrinho" id="abrir-checkout" disabled>Continuar pedido</button>
+            <button type="button" class="limpar-carrinho" id="limpar-carrinho" hidden>Limpar carrinho</button>
         </aside>
     </header>
+    <p class="aviso-carrinho" id="aviso-carrinho" role="status" aria-live="polite"></p>
     <nav class="nav" id="navegacao-principal" aria-label="Navegação principal">
         <button type="button" class="botao-menu-mobile" id="fechar-menu-mobile" aria-label="Fechar menu">&times;</button>
         <div class="botoes">
@@ -81,15 +92,74 @@
             </div>
             <button type="button" class="fechar-checkout" id="fechar-checkout" aria-label="Fechar formulário">&times;</button>
         </div>
-        <p class="checkout-ajuda">Essas informações serão incluídas no pedido enviado pelo WhatsApp.</p>
-        <form class="checkout-carrinho" id="checkout-carrinho">
-            <label for="cliente-nome">Seu nome</label>
-            <input type="text" id="cliente-nome" placeholder="Como podemos chamar você?" required>
-            <label for="cliente-endereco">Endereço</label>
-            <input type="text" id="cliente-endereco" placeholder="Onde entregar?" required>
-            <label for="cliente-observacoes">Observações</label>
-            <textarea id="cliente-observacoes" rows="2" placeholder="Ex.: sem cobertura, tocar a campainha..."></textarea>
-            <button type="submit" class="finalizar-carrinho">Fazer pedido pelo WhatsApp</button>
+        <p class="checkout-ajuda">Suas informações serão incluídas na mensagem do WhatsApp. Nada é cobrado por aqui.</p>
+        <div class="checkout-resumo" id="checkout-resumo" aria-live="polite"></div>
+        <form class="checkout-carrinho" id="checkout-carrinho" novalidate>
+            <fieldset class="checkout-bloco">
+                <legend>Seus dados</legend>
+                <div class="checkout-campo">
+                    <label for="cliente-nome">Seu nome *</label>
+                    <input type="text" id="cliente-nome" placeholder="Como podemos chamar você?" autocomplete="name">
+                </div>
+                <div class="checkout-campo">
+                    <label for="cliente-telefone">Telefone / WhatsApp *</label>
+                    <input type="tel" id="cliente-telefone" placeholder="(27) 99999-9999" inputmode="tel" autocomplete="tel">
+                </div>
+            </fieldset>
+
+            <fieldset class="checkout-bloco">
+                <legend>Como quer receber?</legend>
+                <div class="checkout-opcoes">
+                    <label class="checkout-opcao">
+                        <input type="radio" name="tipo-entrega" value="Entrega" checked>
+                        <span>Entrega</span>
+                    </label>
+                    <label class="checkout-opcao">
+                        <input type="radio" name="tipo-entrega" value="Retirada">
+                        <span>Retirada</span>
+                    </label>
+                </div>
+                <div class="checkout-endereco" id="checkout-endereco">
+                    <div class="checkout-campo">
+                        <label for="cliente-endereco">Endereço (rua e número) *</label>
+                        <input type="text" id="cliente-endereco" placeholder="Ex.: Rua das Flores, 123" autocomplete="street-address">
+                    </div>
+                    <div class="checkout-campo">
+                        <label for="cliente-bairro">Bairro *</label>
+                        <input type="text" id="cliente-bairro" placeholder="Ex.: Centro">
+                    </div>
+                    <div class="checkout-campo checkout-campo-largo">
+                        <label for="cliente-referencia">Complemento ou ponto de referência</label>
+                        <input type="text" id="cliente-referencia" placeholder="Apto, bloco, cor do portão...">
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="checkout-bloco">
+                <legend>Forma de pagamento *</legend>
+                <div class="checkout-opcoes">
+                    <label class="checkout-opcao">
+                        <input type="radio" name="forma-pagamento" value="Pix" checked>
+                        <span>Pix</span>
+                    </label>
+                    <label class="checkout-opcao">
+                        <input type="radio" name="forma-pagamento" value="Dinheiro">
+                        <span>Dinheiro</span>
+                    </label>
+                    <label class="checkout-opcao">
+                        <input type="radio" name="forma-pagamento" value="Cartão">
+                        <span>Cartão</span>
+                    </label>
+                </div>
+            </fieldset>
+
+            <div class="checkout-campo">
+                <label for="cliente-observacoes">Observações</label>
+                <textarea id="cliente-observacoes" rows="2" placeholder="Ex.: sem cobertura, tocar a campainha..."></textarea>
+            </div>
+
+            <p class="checkout-erro" id="checkout-erro" role="alert" hidden></p>
+            <button type="submit" class="finalizar-carrinho" id="enviar-pedido">Fazer pedido pelo WhatsApp</button>
         </form>
     </section>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

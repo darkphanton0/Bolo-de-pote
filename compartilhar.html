@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Compartilhe o cardápio da Yellow Doces Artesanais com quem você gosta.">
+    <meta name="theme-color" content="#f7df00">
+    <link rel="icon" href="img/lirio2.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lobster+Two:wght@400;700&display=swap">
     <link rel="stylesheet" href="style.css">
     <title>Yellow | Compartilhar</title>
 </head>
-<body class="pagina-body">
+<body class="pagina-body pagina-compartilhar">
     <button type="button" class="botao-abrir-menu" id="botao-menu-mobile" aria-label="Abrir menu" aria-expanded="false" aria-controls="navegacao-principal">&#8942;</button>
     <div class="docinhos-fundo" aria-hidden="true">
         <span>🍰</span><span>🧁</span><span>🍪</span><span>🍩</span><span>🍮</span><span>🍰</span>
@@ -42,7 +48,7 @@
                 <small id="status-compartilhamento">Usar as opções do seu dispositivo</small>
             </button>
             <a class="acao-pagina" id="compartilhar-whatsapp" href="https://wa.me/" target="_blank" rel="noopener">
-                <span class="acao-icone" aria-hidden="true">◌</span>
+                <span class="acao-icone acao-icone-whatsapp"><img src="img/whatsapp-icon.png" alt=""></span>
                 <strong>Enviar pelo WhatsApp</strong>
                 <small>Compartilhar diretamente com alguém</small>
             </a>
@@ -77,14 +83,14 @@
         const statusCopia = document.querySelector('#status-copia');
         const statusCompartilhamento = document.querySelector('#status-compartilhamento');
         const linkWhatsApp = document.querySelector('#compartilhar-whatsapp');
-        const urlCardapio = window.location.href.replace('compartilhar.html', 'index.html');
+        const urlCardapio = new URL('index.html', window.location.href).href;
         const mensagemCompleta = `${mensagemCompartilhamento} ${urlCardapio}`;
 
         linkWhatsApp.href = `https://wa.me/?text=${encodeURIComponent(mensagemCompleta)}`;
 
         carregarProdutos().then((produtosCompartilhar) => {
             document.querySelector('#previa-contagem').textContent = `${produtosCompartilhar.length} ${produtosCompartilhar.length === 1 ? 'sabor' : 'sabores'}`;
-            document.querySelector('#sabores-previa').innerHTML = produtosCompartilhar.slice(0, 6).map((produto) => `<span>${produto.nome}</span>`).join('');
+            document.querySelector('#sabores-previa').innerHTML = produtosCompartilhar.slice(0, 6).map((produto) => `<span>${escaparHtml(produto.nome)}</span>`).join('');
         });
 
         botaoCompartilhar.addEventListener('click', async () => {

@@ -1,56 +1,167 @@
 const usuarioAdmin = 'admin';
 const senhaAdmin = 'yellow123';
+const chaveSessaoAdmin = 'yellow-admin-sessao';
+
 const loginAdmin = document.querySelector('#login-admin');
 const painelAdmin = document.querySelector('#painel-admin');
 const formLogin = document.querySelector('#form-login');
 const erroLogin = document.querySelector('#erro-login');
-const botaoEntrar = document.querySelector('#entrar-admin');
+const campoSenha = document.querySelector('#senha');
+const botaoMostrarSenha = document.querySelector('#mostrar-senha');
 const formProduto = document.querySelector('#form-produto');
 const listaAdmin = document.querySelector('#itens-admin');
 const totalProdutos = document.querySelector('#total-produtos');
 const botaoSalvar = document.querySelector('#salvar-produto');
 const botaoCancelar = document.querySelector('#cancelar-edicao');
+const botaoSair = document.querySelector('#sair-admin');
 const campoPreco = document.querySelector('#produto-preco');
 const campoPrecoOriginal = document.querySelector('#produto-preco-original');
 const campoPromocao = document.querySelector('#produto-promocao');
+const campoImagem = document.querySelector('#produto-imagem');
+const campoArquivo = document.querySelector('#produto-arquivo');
+const campoBuscaAdmin = document.querySelector('#busca-admin');
+const listaCategorias = document.querySelector('#lista-categorias');
+const previaImagem = document.querySelector('#previa-imagem');
 const statusAdmin = document.querySelector('#status-admin');
+
 let produtos = [];
+let termoBusca = '';
 let autenticado = false;
+let temporizadorStatus = null;
 
-const mostrarPainel = (autenticado) => {
-    loginAdmin.hidden = autenticado;
-    painelAdmin.hidden = !autenticado;
+const definirStatus = (mensagem, tipo = 'aviso') => {
+    if (!statusAdmin) {
+        return;
+    }
 
-    if (autenticado) {
+    window.clearTimeout(temporizadorStatus);
+    statusAdmin.classList.remove('status-erro', 'status-sucesso');
+
+    if (!mensagem) {
+        statusAdmin.hidden = true;
+        statusAdmin.textContent = '';
+        return;
+    }
+
+    statusAdmin.hidden = false;
+    statusAdmin.textContent = mensagem;
+
+    if (tipo === 'erro') {
+        statusAdmin.classList.add('status-erro');
+    }
+
+    if (tipo === 'sucesso') {
+        statusAdmin.classList.add('status-sucesso');
+        temporizadorStatus = window.setTimeout(() => definirStatus(''), 4000);
+    }
+};
+
+const mostrarPainel = (estaAutenticado) => {
+    autenticado = estaAutenticado;
+    loginAdmin.hidden = estaAutenticado;
+    painelAdmin.hidden = !estaAutenticado;
+
+    try {
+        if (estaAutenticado) {
+            sessionStorage.setItem(chaveSessaoAdmin, '1');
+        } else {
+            sessionStorage.removeItem(chaveSessaoAdmin);
+        }
+    } catch {
+        /* sessionStorage indisponível; segue sem persistir a sessão */
+    }
+
+    if (estaAutenticado) {
         carregarCatalogoAdmin();
     }
+};
+
+const atualizarPreviaImagem = () => {
+    if (!previaImagem) {
+        return;
+    }
+
+    const arquivo = campoArquivo?.files?.[0];
+
+    if (arquivo) {
+        previaImagem.src = URL.createObjectURL(arquivo);
+        return;
+    }
+
+    previaImagem.src = campoImagem?.value.trim() || 'img/lirio2.webp';
 };
 
 const limparFormulario = () => {
     formProduto.reset();
     document.querySelector('#produto-id').value = '';
-    document.querySelector('#produto-imagem').value = 'img/lirio2.webp';
-    document.querySelector('#produto-preco-original').value = '';
+    campoImagem.value = 'img/lirio2.webp';
+    campoPrecoOriginal.value = '';
+    campoPrecoOriginal.setCustomValidity('');
     document.querySelector('#produto-categoria').value = 'Clássicos';
-    document.querySelector('#produto-promocao').checked = false;
+    campoPromocao.checked = false;
     botaoSalvar.textContent = 'Criar item';
     botaoCancelar.hidden = true;
+    atualizarPreviaImagem();
+};
+
+const preencherCategorias = () => {
+    if (!listaCategorias) {
+        return;
+    }
+
+    const categorias = [...new Set(produtos.map((produto) => produto.categoria).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, 'pt-BR'));
+
+    listaCategorias.innerHTML = categorias
+        .map((categoria) => `<option value="${escaparHtml(categoria)}"></option>`)
+        .join('');
+};
+
+const produtosFiltrados = () => {
+    if (!termoBusca) {
+        return produtos;
+    }
+
+    const termo = termoBusca.toLowerCase();
+
+    return produtos.filter((produto) =>
+        String(produto.nome || '').toLowerCase().includes(termo) ||
+        String(produto.categoria || '').toLowerCase().includes(termo) ||
+        String(produto.descricao || '').toLowerCase().includes(termo)
+    );
 };
 
 const renderizarLista = () => {
-    totalProdutos.textContent = `${produtos.length} ${produtos.length === 1 ? 'item' : 'itens'}`;
-    listaAdmin.innerHTML = produtos.map((produto) => `
+    const visiveis = produtosFiltrados();
+
+    if (termoBusca) {
+        totalProdutos.textContent = `${visiveis.length} de ${produtos.length} ${produtos.length === 1 ? 'item' : 'itens'}`;
+    } else {
+        totalProdutos.textContent = `${produtos.length} ${produtos.length === 1 ? 'item' : 'itens'}`;
+    }
+
+    if (produtos.length === 0) {
+        listaAdmin.innerHTML = '<p class="lista-vazia">Nenhum item cadastrado ainda. Use o formulário acima para criar o primeiro.</p>';
+        return;
+    }
+
+    if (visiveis.length === 0) {
+        listaAdmin.innerHTML = '<p class="lista-vazia">Nenhum item corresponde à busca.</p>';
+        return;
+    }
+
+    listaAdmin.innerHTML = visiveis.map((produto) => `
         <article class="linha-produto">
-            <img src="${produto.imagem}" alt="" class="miniatura-produto">
+            <img src="${escaparHtml(produto.imagem)}" alt="" class="miniatura-produto" loading="lazy">
             <div class="info-produto">
-                <h4>${produto.nome}</h4>
-                <p>${produto.descricao}</p>
-                <small>${produto.categoria}${produto.promocao ? ' · Promoção' : ''}</small>
+                <h4>${escaparHtml(produto.nome)}</h4>
+                <p>${escaparHtml(produto.descricao)}</p>
+                <small>${escaparHtml(produto.categoria)}${produto.promocao ? ' · Promoção' : ''}</small>
             </div>
             <strong>${produto.promocao && produto.precoOriginal > produto.preco ? `<del>${formatarPreco(produto.precoOriginal)}</del>` : ''}${formatarPreco(produto.preco)}</strong>
             <div class="acoes-item-admin">
-                <button type="button" class="botao-secundario" data-acao="editar" data-id="${produto.id}">Editar</button>
-                <button type="button" class="botao-perigo" data-acao="excluir" data-id="${produto.id}">Excluir</button>
+                <button type="button" class="botao-secundario" data-acao="editar" data-id="${escaparHtml(produto.id)}">Editar</button>
+                <button type="button" class="botao-perigo" data-acao="excluir" data-id="${escaparHtml(produto.id)}">Excluir</button>
             </div>
         </article>
     `).join('');
@@ -59,41 +170,61 @@ const renderizarLista = () => {
 const carregarCatalogoAdmin = async () => {
     try {
         produtos = await carregarProdutos();
+        preencherCategorias();
         renderizarLista();
 
         if (window.catalogoRemotoAtivo === false) {
-            statusAdmin.hidden = false;
-            statusAdmin.textContent = 'Banco remoto indisponível. Os dados exibidos são locais neste navegador.';
+            definirStatus('Banco remoto indisponível. Os dados exibidos são locais neste navegador.');
         }
     } catch (erro) {
         console.error('Não foi possível carregar o catálogo remoto.', erro);
         produtos = obterProdutos();
+        preencherCategorias();
         renderizarLista();
-        statusAdmin.hidden = false;
-        statusAdmin.textContent = 'Não foi possível conectar ao Supabase. Execute supabase.sql e confira a URL da página.';
+        definirStatus('Não foi possível conectar ao Supabase. Execute supabase.sql e confira a URL da página.', 'erro');
     }
 };
 
 const entrarNoPainel = () => {
     const usuario = document.querySelector('#usuario').value.trim();
-    const senha = document.querySelector('#senha').value;
+    const senha = campoSenha.value;
 
     if (usuario === usuarioAdmin && senha === senhaAdmin) {
-        autenticado = true;
         erroLogin.hidden = true;
+        formLogin.reset();
         mostrarPainel(true);
+        document.querySelector('#produto-nome')?.focus();
         return;
     }
 
     erroLogin.hidden = false;
+    campoSenha.select();
 };
-
-botaoEntrar.addEventListener('click', entrarNoPainel);
 
 formLogin.addEventListener('submit', (evento) => {
     evento.preventDefault();
     entrarNoPainel();
 });
+
+if (botaoMostrarSenha) {
+    botaoMostrarSenha.addEventListener('click', () => {
+        const estaVisivel = campoSenha.type === 'text';
+        campoSenha.type = estaVisivel ? 'password' : 'text';
+        botaoMostrarSenha.textContent = estaVisivel ? 'Mostrar' : 'Ocultar';
+        botaoMostrarSenha.setAttribute('aria-pressed', String(!estaVisivel));
+        campoSenha.focus();
+    });
+}
+
+if (campoBuscaAdmin) {
+    campoBuscaAdmin.addEventListener('input', () => {
+        termoBusca = campoBuscaAdmin.value.trim();
+        renderizarLista();
+    });
+}
+
+campoImagem?.addEventListener('input', atualizarPreviaImagem);
+campoArquivo?.addEventListener('change', atualizarPreviaImagem);
 
 formProduto.addEventListener('submit', async (evento) => {
     evento.preventDefault();
@@ -115,12 +246,12 @@ formProduto.addEventListener('submit', async (evento) => {
     }
 
     const id = document.querySelector('#produto-id').value;
-    const arquivoImagem = document.querySelector('#produto-arquivo').files[0];
+    const arquivoImagem = campoArquivo.files[0];
     const imagemSelecionada = arquivoImagem ? await new Promise((resolver) => {
         const leitor = new FileReader();
         leitor.addEventListener('load', () => resolver(leitor.result));
         leitor.readAsDataURL(arquivoImagem);
-    }) : document.querySelector('#produto-imagem').value.trim();
+    }) : campoImagem.value.trim();
     const produto = {
         id: id ? Number(id) : Date.now(),
         nome: document.querySelector('#produto-nome').value.trim(),
@@ -129,26 +260,35 @@ formProduto.addEventListener('submit', async (evento) => {
         descricao: document.querySelector('#produto-descricao').value.trim(),
         imagem: imagemSelecionada,
         categoria: document.querySelector('#produto-categoria').value.trim(),
-        promocao: document.querySelector('#produto-promocao').checked
+        promocao: campoPromocao.checked
     };
 
+    const textoBotao = botaoSalvar.textContent;
+    botaoSalvar.disabled = true;
+    botaoSalvar.textContent = id ? 'Salvando...' : 'Criando...';
+
     try {
+        const produtoSalvo = await salvarProdutoRemoto(produto);
+
         if (id) {
-            const produtoSalvo = await salvarProdutoRemoto(produto);
             produtos = produtos.map((item) => item.id === Number(id) ? produtoSalvo : item);
         } else {
-            const produtoSalvo = await salvarProdutoRemoto(produto);
             produtos.push(produtoSalvo);
         }
     } catch (erro) {
         console.error('Não foi possível salvar o produto no Supabase.', erro);
-        window.alert('Não foi possível salvar no banco remoto. Execute supabase.sql e confira as políticas da tabela produtos.');
+        botaoSalvar.disabled = false;
+        botaoSalvar.textContent = textoBotao;
+        definirStatus('Não foi possível salvar no banco remoto. Execute supabase.sql e confira as políticas da tabela produtos.', 'erro');
         return;
     }
 
     salvarProdutos(produtos);
+    preencherCategorias();
     limparFormulario();
     renderizarLista();
+    botaoSalvar.disabled = false;
+    definirStatus(id ? 'Item atualizado com sucesso.' : 'Item criado com sucesso.', 'sucesso');
 });
 
 listaAdmin.addEventListener('click', async (evento) => {
@@ -166,17 +306,35 @@ listaAdmin.addEventListener('click', async (evento) => {
     const id = Number(botao.dataset.id);
     const produto = produtos.find((item) => item.id === id);
 
+    if (!produto) {
+        return;
+    }
+
     if (botao.dataset.acao === 'excluir') {
+        const confirmado = window.confirm(`Excluir "${produto.nome}"? Esta ação não pode ser desfeita.`);
+
+        if (!confirmado) {
+            return;
+        }
+
+        botao.disabled = true;
+        botao.textContent = 'Excluindo...';
+
         try {
             await excluirProdutoRemoto(id);
         } catch (erro) {
             console.error('Não foi possível excluir o produto no Supabase.', erro);
-            window.alert('Não foi possível excluir no banco remoto. Confira as políticas da tabela produtos.');
+            botao.disabled = false;
+            botao.textContent = 'Excluir';
+            definirStatus('Não foi possível excluir no banco remoto. Confira as políticas da tabela produtos.', 'erro');
             return;
         }
+
         produtos = produtos.filter((item) => item.id !== id);
         salvarProdutos(produtos);
+        preencherCategorias();
         renderizarLista();
+        definirStatus(`"${produto.nome}" foi excluído.`, 'sucesso');
         return;
     }
 
@@ -185,20 +343,51 @@ listaAdmin.addEventListener('click', async (evento) => {
     document.querySelector('#produto-preco').value = produto.preco;
     document.querySelector('#produto-preco-original').value = produto.precoOriginal || '';
     document.querySelector('#produto-descricao').value = produto.descricao;
-    document.querySelector('#produto-imagem').value = produto.imagem;
+    campoImagem.value = produto.imagem;
     document.querySelector('#produto-categoria').value = produto.categoria;
-    document.querySelector('#produto-promocao').checked = produto.promocao;
+    campoPromocao.checked = produto.promocao;
     botaoSalvar.textContent = 'Salvar alterações';
     botaoCancelar.hidden = false;
+    definirStatus('');
+    atualizarPreviaImagem();
+    formProduto.scrollIntoView({ behavior: 'smooth', block: 'start' });
     document.querySelector('#produto-nome').focus();
 });
 
-botaoCancelar.addEventListener('click', limparFormulario);
-
-document.querySelector('#sair-admin').addEventListener('click', () => {
-    autenticado = false;
-    mostrarPainel(false);
-    formLogin.reset();
+botaoCancelar.addEventListener('click', () => {
+    limparFormulario();
+    definirStatus('');
 });
 
-mostrarPainel(false);
+botaoSair.addEventListener('click', () => {
+    mostrarPainel(false);
+    formLogin.reset();
+    definirStatus('');
+    document.querySelector('#usuario')?.focus();
+});
+
+document.addEventListener('keydown', (evento) => {
+    if (evento.key === 'Escape' && !botaoCancelar.hidden) {
+        limparFormulario();
+        definirStatus('');
+    }
+});
+
+const iniciarPainelAdmin = () => {
+    let sessaoAtiva = false;
+
+    try {
+        sessaoAtiva = sessionStorage.getItem(chaveSessaoAdmin) === '1';
+    } catch {
+        sessaoAtiva = false;
+    }
+
+    mostrarPainel(sessaoAtiva);
+    atualizarPreviaImagem();
+
+    if (!sessaoAtiva) {
+        document.querySelector('#usuario')?.focus();
+    }
+};
+
+iniciarPainelAdmin();
